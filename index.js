@@ -1,11 +1,34 @@
 import { createClient } from '@supabase/supabase-js'
 
+const arrayfy = payload => Array.isArray(payload) ? payload : [ payload ]
+
 export default {
     install(Vue, { supabaseUrl, supabaseKey, store }) {
 
         const supabase = createClient(supabaseUrl, supabaseKey)
 
-        Vue.prototype.$supa = supabase
+        // Vue.prototype.$supa = (table, action = null, payload = null, payload2 = null) => {
+        //     payload = Array.isArray(payload) ? payload : [ payload ]
+        //     if(!action)
+        //         return supabase.from(table).select('*')
+        //     if(action == 'insert')
+        //         return supabase.from(table).insert(payload)
+        //     if(action == 'delete')
+        //         return supabase.from(table).delete().in('id', payload)
+        //     if(action == 'update')
+        //         return supabase.from(table).update(payload2).in('id', payload)
+        // }
+
+        Vue.prototype.$supa = table => {
+            table = supabase.from(table)
+            return {
+                get: async ({ select, orderby, dir }) => await table.select(select || '*').order(orderby || 'id', { ascending: dir != 'desc' }),
+                insert: async payload => await table.insert(arrayfy(payload)),
+                delete: async ids => await table.delete().in('id', arrayfy(ids)),
+                update: async (ids, payload) => await table.update(payload).in('id', arrayfy(ids)),
+            }
+        }
+        
         Vue.prototype.$supaAuth = supabase.auth
 
         Vue.prototype.$supaWatch = async (table, list /*, callbacks*/) => {
@@ -30,7 +53,7 @@ export default {
             for (let i = 0; i < data.length; i++) {
                 Vue.set(list, i, data[i])
             }
-            
+
         }
 
         if(store) {
