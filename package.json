@@ -1,6 +1,6 @@
 {
   "name": "vue-supa",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Vue.js plugins for Supabase",
   "main": "index.js",
   "scripts": {
