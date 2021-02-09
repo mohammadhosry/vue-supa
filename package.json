@@ -1,0 +1,25 @@
+{
+  "name": "vue-supa",
+  "version": "0.0.1",
+  "description": "Vue.js plugins for Supabase",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mohammadhosry/vue-supa.git"
+  },
+  "keywords": [
+    "vue",
+    "vuejs",
+    "vuex",
+    "supabase"
+  ],
+  "author": "Mohammad Agbareya",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/mohammadhosry/vue-supe/issues"
+  },
+  "homepage": "https://github.com/mohammadhosry/vue-supe#readme"
+}
