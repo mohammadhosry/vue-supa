@@ -7,9 +7,9 @@ const VuexSupa = ({ tables, supabaseUrl, supabaseKey }) => {
         let state = {}
         // let getters = {}
         tables.forEach(table => {
-            let name = table?.name || table
-            state[name || table] = []
-            // getters[name || table] = (state) => state[name]
+            let name = table.name || table
+            state[name] = []
+            // getters[name] = (state) => state[name]
             supabase.from(name)
                 .select(table.select || '*')
                 .order(table.orderBy || 'id')
