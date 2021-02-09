@@ -4,7 +4,14 @@ import { createClient } from '@supabase/supabase-js'
 const VuexSupa = ({ tables, supabaseUrl, supabaseKey }) => {
     const supabase = createClient(supabaseUrl, supabaseKey)
     return store => {
-        let state = {}
+        let state = {
+            // session: null,
+            auth: null,
+        }
+        supabase.auth.onAuthStateChange((event, session) => {
+            // store.commit('dbSessionUpdate', session)
+            store.commit('dbAuthUpdate', event == 'SIGNED_IN' ? session.user : null)
+        })
         // let getters = {}
         tables.forEach(table => {
             let name = table.name || table
@@ -25,6 +32,8 @@ const VuexSupa = ({ tables, supabaseUrl, supabaseKey }) => {
             // namespaced: true,
             state,
             mutations: {
+                // dbSessionUpdate: (state, payload) => state.session = payload,
+                dbAuthUpdate: (state, payload) => state.auth = payload,
                 dbTableSelect: (state, { name, data }) => Vue.set(state, name, data),
                 dbTableInsert: (state, { name, row }) => state[name].push(row),
                 dbTableDelete: (state, { name, id }) => {
@@ -38,7 +47,8 @@ const VuexSupa = ({ tables, supabaseUrl, supabaseKey }) => {
             },
             // getters,
             getters: {
-                db: state => (table => state[table])
+                db: state => (table => state[table]),
+                auth: ({ auth }) => auth,
             },
         })
         console.log(tables, store, supabase)
@@ -49,6 +59,9 @@ Vue.mixin({
     computed: {
         $db() {
             return this.$store.getters.db
+        },
+        $auth() {
+            return this.$store.getters.auth
         }
     }
 })

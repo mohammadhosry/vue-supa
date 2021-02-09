@@ -1,3 +1,5 @@
+## Improt Vuex plugin
+
 ```js
 import { VuexSupa } from 'vue-supa'
 ```
@@ -19,4 +21,11 @@ new Vuex.Store({
         })
     ]
 }
+```
+
+## Usage
+
+```js
+this.$db('messages') // realtime messages
+this.$auth // for retrieving the authenticated user
 ```
