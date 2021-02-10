@@ -88,7 +88,7 @@ Vue.mixin({
                 auth.check = true
             }
             else {
-                auth = { check: true }
+                auth = { check: false }
             }
             return auth
             // return auth ? { check: true, ...auth } : { check: false }
