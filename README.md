@@ -30,7 +30,7 @@ this.$db('messages') // realtime messages
 this.$auth // for retrieving the authenticated user
 ```
 
-```html
+```vue
 <ul v-if="$auth.check">
     <li v-for="todo in $db('todos')" :key="todo.id">
         <label class="form-check-label">
