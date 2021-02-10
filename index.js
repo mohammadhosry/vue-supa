@@ -83,8 +83,12 @@ Vue.mixin({
         //     }
         // },
         $auth() {
-            return this.$store.getters.auth
-        }
+            let  auth = this.$store.getters.auth
+            return auth ? { check: true, ...auth } : { check: false }
+        },
+        $supabase() {
+            return this.$store.getters.supabase
+        },
     },
     methods: {
         $dbAction(name) {
