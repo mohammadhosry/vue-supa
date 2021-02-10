@@ -57,6 +57,11 @@ const VuexSupa = ({ tables, supabaseUrl, supabaseKey }) => {
             getters: {
                 supabase: state => state.supabase,
                 db: state => (table => state[table]),
+                // db: state => ((table, action = null) => !action ? state[table] : ({
+                //     insert: async payload => await supabase.from(table).insert(arrayfy(payload)),
+                //     delete: async ids => await supabase.from(table).delete().in('id', arrayfy(ids)),
+                //     update: async (ids, payload) => await supabase.from(table).update(payload).in('id', arrayfy(ids)),
+                // })[action]),
                 auth: ({ auth }) => auth,
             },
         })
@@ -69,6 +74,14 @@ Vue.mixin({
         $db() {
             return this.$store.getters.db
         },
+        // $dbAction: (name) => {
+        //     let table = this.$store.getters.supabase.from(name)
+        //     return {
+        //         insert: async payload => await table.insert(arrayfy(payload)),
+        //         delete: async ids => await table.delete().in('id', arrayfy(ids)),
+        //         update: async (ids, payload) => await table.update(payload).in('id', arrayfy(ids)),
+        //     }
+        // },
         $auth() {
             return this.$store.getters.auth
         }
