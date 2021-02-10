@@ -84,7 +84,14 @@ Vue.mixin({
         // },
         $auth() {
             let  auth = this.$store.getters.auth
-            return auth ? { check: true, ...auth } : { check: false }
+            if(auth) {
+                auth.check = true
+            }
+            else {
+                auth = { check: true }
+            }
+            return auth
+            // return auth ? { check: true, ...auth } : { check: false }
         },
         $supabase() {
             return this.$store.getters.supabase
