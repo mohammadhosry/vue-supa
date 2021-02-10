@@ -1,12 +1,15 @@
 import Vue from 'vue'
 import { createClient } from '@supabase/supabase-js'
 
+const arrayfy = payload => Array.isArray(payload) ? payload : [ payload ]
+
 const VuexSupa = ({ tables, supabaseUrl, supabaseKey }) => {
     const supabase = createClient(supabaseUrl, supabaseKey)
     return store => {
         let state = {
             // session: null,
             auth: null,
+            supabase,
         }
         supabase.auth.onAuthStateChange((event, session) => {
             // store.commit('dbSessionUpdate', session)
@@ -45,13 +48,19 @@ const VuexSupa = ({ tables, supabaseUrl, supabaseKey }) => {
                     Vue.set(state[name], index, row)
                 },
             },
+            actions: {
+                dbInsert: async ({ state }, { name, payload }) => await state.supabase.from(name).insert(arrayfy(payload)),
+                dbDelete: async ({ state }, { name, ids }) => await state.supabase.from(name).delete().in('id', arrayfy(ids)),
+                dbUpdate: async ({ state }, { name, ids, payload }) => await state.supabase.from(name).update(payload).in('id', arrayfy(ids)),
+            },
             // getters,
             getters: {
+                supabase: state => state.supabase,
                 db: state => (table => state[table]),
                 auth: ({ auth }) => auth,
             },
         })
-        console.log(tables, store, supabase)
+        // console.log(tables, store, supabase)
     }
 }
 
@@ -63,6 +72,21 @@ Vue.mixin({
         $auth() {
             return this.$store.getters.auth
         }
+    },
+    methods: {
+        $dbAction(name) {
+            return {
+                insert: payload => this.$store.dispatch('dbInsert', { name, payload }),
+                remove: ids => this.$store.dispatch('dbDelete', { name, ids }),
+                update: (ids, payload) => this.$store.dispatch('dbUpdate', { name, ids, payload }),
+            }
+            // let table = this.$store.getters.supabase.from(name)
+            // return {
+            //     insert: async payload => await table.insert(arrayfy(payload)),
+            //     delete: async ids => await table.delete().in('id', arrayfy(ids)),
+            //     update: async (ids, payload) => await table.update(payload).in('id', arrayfy(ids)),
+            // }
+        },
     }
 })
 
