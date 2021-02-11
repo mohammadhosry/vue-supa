@@ -74,56 +74,61 @@ const VuexSupa = ({ tables, supabaseUrl, supabaseKey }) => {
             },
         })
         // console.log(tables, store, supabase)
+        
+        Vue.mixin({
+            computed: {
+                $db() {
+                    return this.$store.getters.db
+                },
+                // $dbReady() {
+                //     return this.$store.getters.dbReady
+                // },
+                // $dbAction: (name) => {
+                //     let table = this.$store.getters.supabase.from(name)
+                //     return {
+                //         insert: async payload => await table.insert(arrayfy(payload)),
+                //         delete: async ids => await table.delete().in('id', arrayfy(ids)),
+                //         update: async (ids, payload) => await table.update(payload).in('id', arrayfy(ids)),
+                //     }
+                // },
+                $auth() {
+                    let  auth = this.$store.getters.auth
+                    if(auth) {
+                        auth.check = true
+                        auth.signOut = () => supabase.auth.signOut()
+                    }
+                    else {
+                        auth = {
+                            check: false,
+                            signIn: ({ email, password }) => supabase.auth.signIn({ email, password }),
+                            signUp: ({ email, password }) => supabase.auth.signUp({ email, password }),
+                        }
+                    }
+                    return auth
+                    // return auth ? { check: true, ...auth } : { check: false }
+                },
+                $supabase() {
+                    return this.$store.getters.supabase
+                },
+            },
+            methods: {
+                $dbAction(name) {
+                    return {
+                        insert: payload => this.$store.dispatch('dbInsert', { name, payload }),
+                        remove: ids => this.$store.dispatch('dbDelete', { name, ids }),
+                        update: (ids, payload) => this.$store.dispatch('dbUpdate', { name, ids, payload }),
+                    }
+                    // let table = this.$store.getters.supabase.from(name)
+                    // return {
+                    //     insert: async payload => await table.insert(arrayfy(payload)),
+                    //     delete: async ids => await table.delete().in('id', arrayfy(ids)),
+                    //     update: async (ids, payload) => await table.update(payload).in('id', arrayfy(ids)),
+                    // }
+                },
+            }
+        })
     }
 }
-
-Vue.mixin({
-    computed: {
-        $db() {
-            return this.$store.getters.db
-        },
-        // $dbReady() {
-        //     return this.$store.getters.dbReady
-        // },
-        // $dbAction: (name) => {
-        //     let table = this.$store.getters.supabase.from(name)
-        //     return {
-        //         insert: async payload => await table.insert(arrayfy(payload)),
-        //         delete: async ids => await table.delete().in('id', arrayfy(ids)),
-        //         update: async (ids, payload) => await table.update(payload).in('id', arrayfy(ids)),
-        //     }
-        // },
-        $auth() {
-            let  auth = this.$store.getters.auth
-            if(auth) {
-                auth.check = true
-            }
-            else {
-                auth = { check: false }
-            }
-            return auth
-            // return auth ? { check: true, ...auth } : { check: false }
-        },
-        $supabase() {
-            return this.$store.getters.supabase
-        },
-    },
-    methods: {
-        $dbAction(name) {
-            return {
-                insert: payload => this.$store.dispatch('dbInsert', { name, payload }),
-                remove: ids => this.$store.dispatch('dbDelete', { name, ids }),
-                update: (ids, payload) => this.$store.dispatch('dbUpdate', { name, ids, payload }),
-            }
-            // let table = this.$store.getters.supabase.from(name)
-            // return {
-            //     insert: async payload => await table.insert(arrayfy(payload)),
-            //     delete: async ids => await table.delete().in('id', arrayfy(ids)),
-            //     update: async (ids, payload) => await table.update(payload).in('id', arrayfy(ids)),
-            // }
-        },
-    }
-})
 
 export {
     VuexSupa
